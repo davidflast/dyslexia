@@ -1,8 +1,9 @@
 from generate_arrays import generate_arrays
 from function_error import is_function_error
-from functions import check_deletion
-from functions import check_insertion
+from functions import lcs
 from is_phonetic import is_phonetic
+from generate_arrays import generate_arrays
+from check_vowel_insertion import check_vowel_insertion
 
 # returns an array of booleans
 # Index
@@ -15,39 +16,43 @@ from is_phonetic import is_phonetic
 # 6: vowel_insertion
 
 
-def word_error(autocorrect, input):
+def word_error(autocorrect, mistake):
     output = dict(phonetic=False,
                   function_word=False,
                   reversal=False,
                   transposition=False,
-                  insertion=0,
-                  deletion=0,
+                  insertion=False,
+                  deletion = False,
                   vowel_insertion=False)
-    if is_phonetic(autocorrect, input):
+    if is_phonetic(autocorrect, mistake):
         output["phonetic"] = True
-        return output
     output["function_word"] = is_function_error(autocorrect)
-    test_array = generate_arrays(autocorrect)
-    num_rows = len(test_array)
-    num_cols = len(test_array)
-    for row in range(num_rows):
-        for col in range(num_cols):
-            current = test_array[row][col]
+    if check_vowel_insertion(autocorrect, mistake):
+        output["vowel_insertion"] = True
+        return output
+    branches_from_auto = generate_arrays(autocorrect)
+    num_rows = len(branches_from_auto)
+    num_cols = len(branches_from_auto[0])
+    for col in range(num_cols):
+        for row in range(num_rows):
+            current = branches_from_auto[row][col]
             output["reversal"] = row != 0
             output["transposition"] = col != 0
-            if current == input:
+            if current == mistake:
                 return output
-            deletions = check_deletion(current, input)
-            insertions = check_insertion(current, input)
-            if 3 > deletions > 0:
-                output["deletion"] = deletions
-                return output
-            if 3 > insertions > 0:
-                output["insertion"] = insertions
-                return output
+            least_common_string = len(lcs(mistake, current))
+            if len(mistake) > len(current):
+                if len(mistake) - least_common_string == 1:
+                    output["insertion"] = True
+                    return output
+            if len(mistake) < len(current):
+                if len(current) - least_common_string == 1:
+                    output["deletion"] = True
+                    return output
     output["reversal"] = False
     output["transposition"] = False
-    output["insertion"] = 0
-    output["deletion"] = 0
+    output["insertion"] = False
+    output["deletion"] = False
     output['vowel_insertion'] = False
     return output
+print(word_error("hello", "helloo"))

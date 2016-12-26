@@ -1,4 +1,4 @@
-input = """
+data = """
 a 	about 	above 	after 	after 	again 	against 	ago
 ahead 	all 	almost 	almost 	along 	already  also 	although 	always 	am 	among
 an 	and 	any 	are 	aren't 	around 	as 	at 	away
@@ -29,7 +29,7 @@ why 	will 	with 	without 	won't 	would 	wouldn't
 yet 	you 	your 	yours 	yourself 	yourselves
 """
 
-function_words = set(input.split())
+function_words = set(data.split())
 
 
 def is_function_error(autocorrect):
